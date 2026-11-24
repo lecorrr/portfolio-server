@@ -1,0 +1,12 @@
+# Both APIs behind HTTPS. Caddy gets and renews the certificates itself and redirects
+# plain HTTP to HTTPS. The host names come from .env, which setup.sh writes.
+
+{$SHOP_HOST} {
+	encode zstd gzip
+	reverse_proxy 127.0.0.1:8020
+}
+
+{$BOOKING_HOST} {
+	encode zstd gzip
+	reverse_proxy 127.0.0.1:8030
+}

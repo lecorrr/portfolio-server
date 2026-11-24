@@ -1,0 +1,20 @@
+# Caddy in front of both APIs. It owns ports 80 and 443 and forwards to the APIs, which
+# listen on 127.0.0.1 only; host networking is what lets it reach those loopback ports.
+name: proxy
+
+services:
+  caddy:
+    image: caddy:2
+    network_mode: host
+    env_file: .env
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      # Certificates live here. Keep the volume: asking for new ones on every start would
+      # run into the certificate authority's rate limits.
+      - caddy-data:/data
+      - caddy-config:/config
+    restart: unless-stopped
+
+volumes:
+  caddy-data:
+  caddy-config:

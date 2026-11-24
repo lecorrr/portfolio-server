@@ -1,0 +1,22 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: ShellCheck
+        run: shellcheck -x setup.sh backup.sh tests/test_setup.sh
+      - name: Script tests
+        run: bash tests/test_setup.sh
+      - name: Caddyfile is valid
+        run: >-
+          docker run --rm
+          -e SHOP_HOST=shop.example.com -e BOOKING_HOST=booking.example.com
+          -v "$PWD/Caddyfile:/etc/caddy/Caddyfile:ro"
+          caddy:2 caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
